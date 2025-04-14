@@ -1,6 +1,5 @@
 "use client";
 import React, { JSX, useState } from "react";
-import { motion } from "framer-motion";
 
 const winningCombos: number[][] = [
   [0, 1, 2],
@@ -27,11 +26,10 @@ export default function MovableTicTacToe(): JSX.Element {
   const [xCount, setXCount] = useState(0);
   const [oCount, setOCount] = useState(0);
 
-  // Handle the click event for both placing and moving pieces
   const handleClick = (index: number): void => {
     if (winner) return;
 
-    // Phase 1: Placing X or O
+    // Phase 1: Placing X or O (up to 3 each)
     if (xCount < 3 || oCount < 3) {
       if (board[index] === null) {
         const newBoard = [...board];
@@ -53,13 +51,13 @@ export default function MovableTicTacToe(): JSX.Element {
     // Phase 2: Moving pieces
     if (selectedIndex === null) {
       if (board[index] === currentPlayer) {
-        setSelectedIndex(index); // select the piece to move
+        setSelectedIndex(index);
       }
     } else {
       if (board[index] === null) {
         const newBoard = [...board];
         newBoard[index] = currentPlayer;
-        newBoard[selectedIndex] = null; // move the piece
+        newBoard[selectedIndex] = null;
         setBoard(newBoard);
         setSelectedIndex(null);
 
@@ -69,62 +67,39 @@ export default function MovableTicTacToe(): JSX.Element {
           setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
         }
       } else if (board[index] === currentPlayer) {
-        setSelectedIndex(index); // change selection if same player piece is clicked
+        setSelectedIndex(index); // change selection
       } else {
-        setSelectedIndex(null); // cancel if another player's piece is clicked
+        setSelectedIndex(null); // cancel
       }
     }
   };
 
-  // Reset the game
-  const handleReset = () => {
-    setBoard(Array(9).fill(null));
-    setCurrentPlayer("X");
-    setWinner(null);
-    setXCount(0);
-    setOCount(0);
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold mb-6">Movable Tic Tac Toe</h1>
-      <div className="grid grid-cols-3 gap-4">
+    <div className="flex flex-col items-center gap-4 p-4">
+      <h1 className="text-2xl font-bold">Movable Tic Tac Toe</h1>
+      <div className="grid grid-cols-3 gap-2">
         {board.map((cell, idx) => (
-          <motion.button
+          <button
             key={idx}
             onClick={() => handleClick(idx)}
-            className={`w-28 h-28 border-4 text-5xl font-bold flex items-center justify-center rounded-md
+            className={`w-20 h-20 border-2 text-3xl font-bold flex items-center justify-center
+              ${selectedIndex === idx ? "bg-yellow-200" : "bg-white"}
               ${
                 cell === "X"
-                  ? "text-blue-500"
+                  ? "text-blue-600"
                   : cell === "O"
-                  ? "text-red-500"
-                  : "text-gray-500"
-              } 
-              ${selectedIndex === idx ? "bg-yellow-400" : "bg-gray-800"}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+                  ? "text-red-600"
+                  : "text-gray-400"
+              }`}
           >
             {cell}
-          </motion.button>
+          </button>
         ))}
       </div>
       {winner && (
-        <div className="mt-4 text-2xl font-semibold">{winner} wins!</div>
+        <div className="mt-4 text-xl font-semibold">{winner} wins!</div>
       )}
-      {!winner && (
-        <div className="mt-2 text-xl">Current Turn: {currentPlayer}</div>
-      )}
-
-      <div className="flex gap-4 mt-4">
-        <button
-          onClick={handleReset}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        >
-          Reset
-        </button>
-      </div>
+      {!winner && <div className="mt-2">Current Turn: {currentPlayer}</div>}
     </div>
   );
 }
